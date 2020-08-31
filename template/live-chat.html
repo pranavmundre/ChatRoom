@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block 'title' %} Live Chat Room {% endblock %}
+{% block 'contents' %}
+	<div>
+		<div class="user-details  row">
+			<div class="col-md-6">
+				<label>Your Name: </label>
+				<span class="username">{{ username }}</span>
+			</div>
+			<div class="col-md-6">
+				<label>Room Name:</label>
+				<span class="room-name">{{ group_name }}</span>
+			</div>
+		</div>
+		
+			<textarea name="msg_history" id="msg_history" rows="10" cols="40"  class="form-control" readonly="true"></textarea>
+			
+			<div class="form-group">
+				<label for="username">Message:</label>
+				<input type="text" class="form-control" placeholder="write your thought here..." id="msg" name="msg" required="">
+			</div>
+			
+			<button type="button" name="send_msg" class="btn btn-success"  onclick="websocket_send_message(this)">Send</button>
+			
+	</div>
+	<script>
+	var socket = new WebSocket("ws://127.0.0.1:8000/ws/messages/");
+	socket.onopen = websocket_welcome;
+	socket.onmessage = websocket_message_receive
+	function websocket_welcome(arg) {
+		console.log("Socket connected.")
+		// const data = JSON.parse(arg.data);
+		socket.send(JSON.stringify({
+					"action": "create_user_chat" ,
+					"username": "{{ username }}" ,
+					"group_name": "{{ group_name }}",
+					"message": "Hi"
+				}));
+	}
+	function websocket_message_receive(arg) {
+		const data = JSON.parse(arg.data);
+		msg_history = document.getElementById('msg_history')
+		// console.log("Socket Open msg " + data["action"])
+
+		if (data["action"] == "new_user_added" ) {
+			msg_history.append("\n"+data.message_data['username']+ " is added " )
+			return true
+		}
+		
+		msg_history.append("\n"+data.message_data['username']+ ": " +data.message_data['message'])
+	}
+	function websocket_send_message(arg) {
+		msg_box = document.getElementById('msg')
+		// console.log("Socket send msg.")
+		socket.send(JSON.stringify({
+					"username":  "{{ username }}",
+					"message": msg_box.value
+				}));
+		msg_box.value = ""
+	}
+	socket.onerror = function(arg) {
+		// printObject(arg)
+		console.log("Socket error msg" )
+	}
+	socket.onclose = async function(arg) {
+		console.log("Socket Close" )
+		await sleep(2000)
+		console.log("Socket connecting..")
+		socket = new WebSocket("ws://127.0.0.1:8000/ws/messages/");
+		socket.onopen = websocket_welcome;
+		socket.onmessage = websocket_message_receive;
+	}
+	
+	if (socket.readyState == WebSocket.OPEN) {
+	} else if (socket.readyState == WebSocket.CONNECTING){
+		console.log("Socket connecting..")
+	}
+	function printObject(o) {
+		var out = '';
+		for (var p in o) {
+			out += p + ': ' + o[p] + '\n';
+		}
+		return out
+	}
+	function sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+	</script>
+	
+{% endblock %}
