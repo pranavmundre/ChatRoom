@@ -18,17 +18,6 @@ import json
 class ChatConsumer(AsyncWebsocketConsumer):
 	async def connect(self ):
 		# print("Websocket: connected",text_data )
-
-		self.group_name = "new_group"
-		# self.group_name = text_data['group_name']
-		# self.username = text_data['username']
-		self.username = "text_data['username']"
-
-		await self.channel_layer.group_add(
-				self.group_name ,
-				self.channel_name
-			)
-
 		await self.accept()
 		await self.send(json.dumps({
 					"type": "websocket.accept"
@@ -43,8 +32,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 		try:
 			if "create_user_chat" == text_data.get('action', "") :
-				print("Websocket: check",text_data )
-				self.username = text_data['username']
 				self.group_name = text_data['group_name']
 
 				await self.channel_layer.group_add(
@@ -56,7 +43,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 				action = "message"
 
 		except Exception as e:
-			raise e
+			# raise e
 			pass
 		message_data['username'] = text_data.get("username", "Anonymous")
 		message_data['group_name'] =self.group_name
