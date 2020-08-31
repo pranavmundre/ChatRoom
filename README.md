@@ -1,1 +1,1 @@
-# Django-Live-Chat-Room
+# Django Live Chat Room
