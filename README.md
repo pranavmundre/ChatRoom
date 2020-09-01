@@ -8,6 +8,9 @@ pip install virtualenv
 python -m virtualenv -p python3 venv
 ```
 and activate it.
+```
+source venv/bin/activate
+```
 
 ## Install django and all python packages
 ```
