@@ -1,6 +1,6 @@
-# Django Live Chat Room
+# Django-3 Live Chat Room
 Live chatting web-appliction.
-
+You can chat with your friends in group
 
 ## Create Virtualenv with Python3
 ```
