@@ -4,16 +4,14 @@ from django.contrib.auth import get_user_model
 from channels.consumer import SyncConsumer, AsyncConsumer
 from channels.db import database_sync_to_async
 
-# from chat.models import Thread, ChatMessage
-
-
-User = get_user_model()
-
-
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.generic.websocket import WebsocketConsumer
 
-import json
+from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync
+
+
+User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
 	async def connect(self ):
@@ -22,26 +20,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		await self.send(json.dumps({
 					"type": "websocket.accept"
 				}))
-		
-
 
 	async def receive(self, text_data ):
 		message_data = {}
 		text_data = json.loads(text_data)
-		# print("ok", text_data['message'])
 
 		try:
 			if "create_user_chat" == text_data.get('action', "") :
 				self.group_name = text_data['group_name']
 
 				await self.channel_layer.group_add(
-		           self.group_name,
-		           self.channel_name
-		       )
+				   self.group_name,
+				   self.channel_name
+			   	)
 				action = "new_user_added"
 			else:
 				action = "message"
-
 		except Exception as e:
 			# raise e
 			pass
@@ -58,12 +52,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 				'action' : action, 
 			}
 		)
-		print("Websocket: ",text_data )
 		
 
 	async def disconnect(self, close_code):
-		# print("Websocket: disconnected",)
-		# await self.disconnect()
 		pass
 
 
@@ -71,7 +62,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		try:
 			# print("event: ", event)
 			message = event['message']
-
 			await self.send(text_data=json.dumps({
 					'message_data': message, 
 					'action': event['action'], 
@@ -81,5 +71,53 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			# print("Error: ", e)
 		pass
 
-	async def create_room(self, event):
+	
+class SocketIO( AsyncWebsocketConsumer ):
+	async def connect(self ):
+		self.group_name = "all"
+		await self.channel_layer.group_add(
+		   self.group_name,
+		   self.channel_name
+	   	)
+		await self.accept()
+		await self.send(json.dumps({
+					"type": "websocket.accept",
+				}))
+
+	async def receive(self, text_data ):
+		# await self.emit('notify',{'k':'asdf'})
 		pass
+
+	async def disconnect(self, close_code):
+		print("Websocket: disconnected",)
+		print("close_code: ", close_code )
+		pass
+
+	async def emit(self, *arg , **kwarg):
+		await self.channel_layer.group_send(
+			"all", 
+			{
+				'type': 'send_to_all',
+				'data':arg, 
+			}
+		)
+	
+	async def send_to_all(self, event):
+		await self.send(json.dumps(event['data']))
+
+class sio:
+	def __init__(self, arg):
+		self.group_name = "all"
+
+	@async_to_sync
+	async def emit( self, *arg ):
+		from channels.layers import get_channel_layer
+		channel_layer = get_channel_layer()
+		await channel_layer.group_send(
+			"all",
+			{
+				'type': 'send_to_all',
+				'data': arg 
+			}
+		)
+		return True

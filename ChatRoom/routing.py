@@ -9,7 +9,9 @@ from chat.websocket import consumers
 
 
 websocket_urlPattern = [
-	path("ws/messages/", consumers.ChatConsumer, name='web-chat'),
+	path("ws/messages/", consumers.ChatConsumer, name='web-messages'),
+	path("socketio/", consumers.SocketIO, name='socketio'),
+	path("", consumers.SocketIO, name='c-socketio'),
 
 ]
 
