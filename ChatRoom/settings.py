@@ -71,20 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ChatRoom.wsgi.application'
 
-ASGI_APPLICATION = 'ChatRoom.routing.application'
-
-CHANNEL_LAYERS = {
-    'default': {
-        # 'BACKEND' : 'asgi_redis.RedisChannelLayer',
-        'BACKEND' : 'channels_redis.core.RedisChannelLayer' ,
-        'CONFIG': {
-            'hosts': [('localhost', 6379)],
-        },
-    },
-}
-
-
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -133,3 +119,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Django Channels Setting
+ASGI_APPLICATION = 'ChatRoom.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        # 'BACKEND' : 'asgi_redis.RedisChannelLayer',
+        'BACKEND' : 'channels_redis.core.RedisChannelLayer' ,
+        'CONFIG': {
+            'hosts': [('localhost', 6379)],
+        },
+    },
+}
