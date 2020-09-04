@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Web Socket</title>
+
+</head>
+<body>
+
+<div style="padding: 30px">
+	<label>MSGSL</label>
+	<textarea name="live_msg" id="chat-log" rows="10"></textarea>
+
+
+	<div>
+		<label>MSG:</label>
+		<input type="text" name="msg" id="msg">
+	</div>
+	<div>
+		<button type="button" name="send_msg" onclick="send_message_web_live(this)">Send</button>
+	</div>
+</div>
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script> -->
+<script>
+	// io.connect
+// var socket = new io.Socket();
+// socket.connect();
+
+// var socket = io.connect("ws://127.0.0.1:8000/socketio/");
+// var socket = new WebSocket("http://13.126.123.125:8000/ws/messages/");
+// var socket = new WebSocket("ws://127.0.0.1:8000/socketio/");
+var socket = new WebSocket("ws://127.0.0.1:8000/");
+ // const socket = io('http://localhost:8000');
+socket.onopen = websocket_welcome;
+socket.onmessage = websocket_msg_show
+
+// socket.on('connect', () => {
+//   console.log(socket.connected); // true
+// });
+
+function websocket_welcome(arg) {
+	console.log("Socket Open")
+}
+
+function websocket_msg_show(arg) {
+	const data = JSON.parse(arg.data);
+	msg_box = document.getElementById('msg')
+	if (data['sid'] ) {
+		msg_box.value = data['sid']
+	}
+
+	console.log("Socket Open msg")
+    document.querySelector('#chat-log').value += (data.message + '\n');
+ 	// body...
+} 
+
+function send_message_web_live(arg) {
+	msg_box = document.getElementById('msg')
+	printObject(arg)
+
+	console.log("Socket send msg")
+	socket.send(JSON.stringify({
+				"sid": msg_box.value,
+				"name": "pranav"
+			}));
+}
+
+socket.onerror = function(arg) {
+	printObject(arg)
+	console.log("Socket error msg" )
+}
+
+socket.onclose = function(arg) {
+	console.log("OK"+arg)
+	printObject(arg)
+	console.log("Socket Close" )
+}
+
+// socket.onclose = function(e) {
+// 	console.log("Socket Close")
+
+// }
+if (socket.readyState == WebSocket.OPEN) {
+
+    } else if (socket.readyState == WebSocket.CONNECTING){
+        console.log("Socket connecting..")
+    }
+
+function printObject(o) {
+  var out = '';
+  for (var p in o) {
+    out += p + ': ' + o[p] + '\n';
+  }
+  // alert(out);
+	// console.log("Print Object: "+ out)
+  return out
+}
+</script>
+</body>
+</html>

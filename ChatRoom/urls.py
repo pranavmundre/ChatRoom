@@ -17,9 +17,11 @@ from django.conf.urls import url
 from django.urls import path, include
 from django.contrib import admin
 
-from chat.views import home
+from chat import  views as chat_views
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     path('chat/', include('chat.urls')),
-    path('', home, name="home" ),
+    path('', chat_views.home, name="home" ),
+    path('emit-socket/', chat_views.emit_socket, name="emit-socket" ),
 ]

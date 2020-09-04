@@ -24,3 +24,7 @@ def live_web_msg(request):
 	}
 
 	return render( request, "live-chat.html", context )
+
+def emit_socket(request):
+	sio.emit("notfiy", "ok")
+	return render( request, "socketio.html" )
