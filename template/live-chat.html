@@ -25,7 +25,10 @@
 			
 	</div>
 	<script>
-	var socket = new WebSocket("ws://127.0.0.1:8000/ws/messages/");
+	var base_url = window.location.origin
+	var host = window.location.host;
+
+	var socket = new WebSocket("ws://"+host+"/ws/messages/");
 	socket.onopen = websocket_welcome;
 	socket.onmessage = websocket_message_receive
 	function websocket_welcome(arg) {
@@ -67,7 +70,7 @@
 		console.log("Socket Close" )
 		await sleep(2000)
 		console.log("Socket connecting..")
-		socket = new WebSocket("ws://127.0.0.1:8000/ws/messages/");
+		socket = new WebSocket("ws://"+host+"/ws/messages/");
 		socket.onopen = websocket_welcome;
 		socket.onmessage = websocket_message_receive;
 	}

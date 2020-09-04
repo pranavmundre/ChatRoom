@@ -14,7 +14,7 @@
 	<main class="container">
 			<div class="col-md-6 offset-md-3">
 		<div class="room-enter-form">
-				<form class="form" method="GET" action="http://127.0.0.1:8000/chat/live-web/">
+				<form class="form" method="GET" action="{% url 'live_web_msg'%}">
 					<div class="form-group">
 						<label for="username">Your Name:</label>
 						<input type="text" class="form-control" placeholder="Enter your name" id="username" name="username" required="">
@@ -30,7 +30,7 @@
 							<input class="form-check-input" type="checkbox"> Remember me
 						</label>
 					</div>
-					<button type="submit" class="btn btn-primary">Goto Room</button>
+					<button type="submit" class="btn btn-primary">Enter In Room</button>
 
 					 
 				</form>
