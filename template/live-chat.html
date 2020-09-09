@@ -27,8 +27,9 @@
 	<script>
 	var base_url = window.location.origin
 	var host = window.location.host;
+	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 
-	var socket = new WebSocket("ws://"+host+"/ws/messages/");
+	var socket = new WebSocket(ws_scheme+"://"+host+"/ws/messages/");
 	socket.onopen = websocket_welcome;
 	socket.onmessage = websocket_message_receive
 	function websocket_welcome(arg) {
